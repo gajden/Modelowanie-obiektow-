@@ -12,7 +12,7 @@ class DataLoader(object):
         if extension not in self.supported:
             raise FileNotSupportedException(0, 'Extension: .%s not supported.' % extension)
         elif extension == 'ply':
-            self.__load_ply(path)
+            return self.__load_ply(path)
         elif extension == 'stl':
             return self.__load_stl(path)
 
@@ -21,10 +21,26 @@ class DataLoader(object):
             info = self.__parse_ply_header(path)
             data = {}
             line = f.readline()
-            vertex = np.zeros((info['element']['vertex']['num'], 3))
 
-            while line != 'end header':
-                line = f.readline()
+            while line[0] != 'end_header':
+                line = f.readline().strip().split(' ')
+            for element in info['element'].keys():
+                data[element] = []
+                for i in xrange(info['element'][element]['number']):
+                    line = f.readline().strip().split(' ')
+                    if element == 'vertex':
+                        point = (float(line[0]), float(line[1]), float(line[2]))
+                        data[element].append(point)
+                    elif element == 'face':
+                        vertices_num = int(line[0])
+                        face = []
+                        for v in xrange(1, vertices_num + 1):
+                            face.append(int(line[v]))
+                        data[element].append(face)
+                    elif element == 'edge':
+                        edge = [int(line[0]), int(line[1])]
+                        data[element].append(edge)
+            return data
 
 
     def __parse_ply_header(self, path):
@@ -41,11 +57,12 @@ class DataLoader(object):
                     info[line[0]] = [line[1], line[2]]
                 elif line[0] == 'element':
                     last_element = line[1]
-                    info[last_element] = {'number': int(line[2])}
+                    info['element'][last_element] = OrderedDict()
+                    info['element'][last_element]['number'] = int(line[2])
                 elif line[0] == 'property':
-                    info[last_element][line[2]] = line[1]
-                line = f.readline().split(' ')
-        return info
+                    info['element'][last_element][line[2]] = line[1]
+                line = f.readline().strip().split(' ')
+            return info
 
     def __load_stl(self, path):
         name = ''
@@ -63,3 +80,10 @@ class DataLoader(object):
                     facet['vertexes'].append((float(parsed[1]), float(parsed[2]), float(parsed[3])))
                 elif parsed[0] == 'endfacet':
                     data.append(facet)
+
+
+if __name__ == '__main__':
+    loader = DataLoader()
+    ply_path = '../files/example.ply'
+    loaded = loader.load_file(ply_path)
+    print loaded
