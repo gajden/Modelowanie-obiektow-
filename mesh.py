@@ -41,11 +41,28 @@ class MeshArray(MeshStructure):
         print self.vertexes
         print self.connections
 
-    # TODO sasiedztwo wierzcholkow dla kazdego wierzcholka, 2 warstwy
-    def vertexes(self):
+    # sasiedztwo wierzcholkow dla kazdego wierzcholka, 2 warstwy
+    def vertex(self):
         result = []
-        for element in
-        pass
+        for i in range(len(self.vertexes)):
+            result.append([])
+        for element in self.connections:
+            result[element[0]].append(element[1])
+            result[element[0]].append(element[2])
+            result[element[1]].append(element[0])
+            result[element[1]].append(element[2])
+            result[element[2]].append(element[0])
+            result[element[2]].append(element[1])
+        result2 = []
+        for i in range(len(self.vertexes)):
+            result2.append([])
+        for element in self.connections:
+            result2[element[0]] = result[element[0]] + result[element[1]] + result[element[2]]
+            result2[element[1]] = result[element[0]] + result[element[1]] + result[element[2]]
+            result2[element[2]] = result[element[0]] + result[element[1]] + result[element[2]]
+        for i in range(len(result2)):
+            result2[i] = set(result2[i])
+        return result2
 
     # elementy zawierajace wierzcholek dla kazdego wierzcholka
     def vertexFaces(self):
