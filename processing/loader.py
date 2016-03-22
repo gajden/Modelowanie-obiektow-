@@ -14,7 +14,7 @@ class DataLoader(object):
         elif extension == 'ply':
             self.__load_ply(path)
         elif extension == 'stl':
-            self.__load_stl(path)
+            return self.__load_stl(path)
 
     def __load_ply(self, path):
         with open(path, 'rb') as f:
@@ -44,7 +44,24 @@ class DataLoader(object):
                     info[last_element] = {'number': int(line[2])}
                 elif line[0] == 'property':
                     info[last_element][line[2]] = line[1]
+                line = f.readline().split(' ')
         return info
 
     def __load_stl(self, path):
-        pass
+        with open(path, 'r') as file:
+            facets = []
+            line = [x for x in file.readline().split(' ') if x != '']
+            while line[0] != 'endsolid':
+                if line[0] == 'facet':
+                    facet = {'xyz': (float(line[2]), float(line[3]), float(line[4])),
+                         'vertex': []}
+                    line = [x for x in file.readline().split(' ') if x != '']
+                    while line[0] != 'endfacet' and line[0] != 'endsolid':
+                        if line[0] == 'vertex':
+                            facet['vertex'].append((float(line[1]), float(line[2]), float(line[3])))
+                        if line[0] != 'endsolid':
+                            line = [x for x in file.readline().split(' ') if x != '']
+                    facets.append(facet)
+                if line[0] != 'endsolid':
+                    line = [x for x in file.readline().split(' ') if x != '']
+        return facets
