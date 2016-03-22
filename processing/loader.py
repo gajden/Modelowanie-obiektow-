@@ -1,6 +1,5 @@
 from collections import OrderedDict
 from processing.exceptions import FileNotSupportedException
-import numpy as np
 
 
 class DataLoader(object):
