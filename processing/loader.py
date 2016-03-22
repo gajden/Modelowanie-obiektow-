@@ -48,20 +48,18 @@ class DataLoader(object):
         return info
 
     def __load_stl(self, path):
+        name = ''
+        data = []
         with open(path, 'r') as file:
-            facets = []
-            line = [x for x in file.readline().split(' ') if x != '']
-            while line[0] != 'endsolid':
-                if line[0] == 'facet':
-                    facet = {'xyz': (float(line[2]), float(line[3]), float(line[4])),
-                         'vertex': []}
-                    line = [x for x in file.readline().split(' ') if x != '']
-                    while line[0] != 'endfacet' and line[0] != 'endsolid':
-                        if line[0] == 'vertex':
-                            facet['vertex'].append((float(line[1]), float(line[2]), float(line[3])))
-                        if line[0] != 'endsolid':
-                            line = [x for x in file.readline().split(' ') if x != '']
-                    facets.append(facet)
-                if line[0] != 'endsolid':
-                    line = [x for x in file.readline().split(' ') if x != '']
-        return facets
+            for line in file:
+                parsed = [x.replace('\n','') for x in line.split(' ') if x != '']
+                if parsed[0] == 'solid':
+                    name = parsed[1]
+                elif parsed[0] == 'endsolid':
+                    return (name, data)
+                elif parsed[0] == 'facet':
+                    facet = {'normal': (float(parsed[2]), float(parsed[3]), float(parsed[4])), 'vertexes': []}
+                elif parsed[0] == 'vertex':
+                    facet['vertexes'].append((float(parsed[1]), float(parsed[2]), float(parsed[3])))
+                elif parsed[0] == 'endfacet':
+                    data.append(facet)
