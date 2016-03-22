@@ -25,8 +25,8 @@ class MeshArray(MeshStructure):
     def loadFromPly(self):
         pass
 
-    def loadFromStl(self):
-        data = DataLoader().load_file('files/example.stl')
+    def loadFromStl(self, path):
+        data = DataLoader().load_file(path)
         self.vertexes = []
         for facet in data[1]:
             for vertex in facet['vertexes']:
@@ -50,14 +50,15 @@ class MeshArray(MeshStructure):
             result[vertex] = []
         for i in range(len(self.connections)):
             for vertex in self.connections[i]:
-                result[vertex].append(i)
+                result[self.vertexes[vertex]].append(i)
+        return result
 
     def elements(self):
         result = dict()
         for elem in self.connections:
             result[elem] = []
             for elem2 in self.connections:
-                if len(set(elem + elem2)) < 6:
+                if len(set(elem + elem2)) in [4,5,6]:
                     result[elem].append(elem2)
         return result
 

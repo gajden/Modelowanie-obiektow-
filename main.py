@@ -2,4 +2,6 @@ from mesh import *
 
 if __name__ == '__main__':
     mesh = MeshArray()
-    mesh.loadFromStl()
+    mesh.loadFromStl('files/example.stl')
+    print mesh.elements()
+    print mesh.vertexFaces()
