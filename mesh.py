@@ -1,5 +1,5 @@
 from processing.loader import DataLoader
-
+from processing.exceptions import IncorrectElementsException
 
 class MeshStructure(object):
     def __init__(self):
@@ -41,9 +41,12 @@ class MeshArray(MeshStructure):
         print self.vertexes
         print self.connections
 
+    # TODO sasiedztwo wierzcholkow dla kazdego wierzcholka, 2 warstwy
     def vertexes(self):
+        result = []
         pass
 
+    # elementy zawierajace wierzcholek dla kazdego wierzcholka
     def vertexFaces(self):
         result = dict()
         for vertex in self.vertexes:
@@ -53,14 +56,31 @@ class MeshArray(MeshStructure):
                 result[self.vertexes[vertex]].append(i)
         return result
 
+    #sasiedztwo elementow, 2 warstwy
     def elements(self):
         result = dict()
         for elem in self.connections:
             result[elem] = []
             for elem2 in self.connections:
-                if len(set(elem + elem2)) in [4,5,6]:
+                if len(set(elem + elem2)) in [4,5]:
                     result[elem].append(elem2)
         return result
+
+    #zamiana krawedzi w dwoch przyleglych elementach
+    def edgeChange(self, elem1index, elem2index):
+        if (elem1index < 0 or elem1index >= len(self.connections) or elem2index < 0 or elem2index >= len(self.connections)):
+            raise IncorrectElementsException
+        if len(set(self.connections[elem1index] + self.connections[elem2index])) != 4:
+            raise IncorrectElementsException
+        set1 = set(self.connections[elem1index])
+        set2 = set(self.connections[elem2index])
+        intersection = set1 & set2
+        other = list((set1 | set2) - intersection)
+        intersection = list(intersection)
+        self.connections[elem1index] = (other[0], other[1], intersection[0])
+        self.connections[elem2index] = (other[0], other[1], intersection[1])
+
+    #TODO okreslenie, czy siatka posiada brzeg
 
 
 class MeshHalfEdge(MeshStructure): # albo winged
