@@ -1,4 +1,4 @@
-from mesh import *
+from structures.vertex_connection_array import *
 
 if __name__ == '__main__':
     mesh = MeshArray()

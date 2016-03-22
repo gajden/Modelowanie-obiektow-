@@ -1,23 +1,7 @@
 from processing.loader import DataLoader
 from processing.exceptions import IncorrectElementsException
 
-class MeshStructure(object):
-    def __init__(self):
-        pass
-
-    def loadFromPly(self):
-        pass
-    def loadFromStl(self):
-        pass
-    def vertexes(self):
-        pass
-    def vertexFaces(self):
-        pass
-    def elements(self):
-        pass
-
-
-class MeshArray(MeshStructure):
+class MeshArray():
     def __init__(self):
         self.vertexes = []
         self.connections = []
@@ -110,13 +94,3 @@ class MeshArray(MeshStructure):
             if v == 0:
                 return False
         return True
-
-
-
-class MeshHalfEdge(MeshStructure): # albo winged
-    def __init__(self):
-        pass
-    def loadFromPly(self):
-        pass
-    def loadFromStl(self):
-        pass
