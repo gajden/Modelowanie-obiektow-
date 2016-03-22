@@ -44,6 +44,7 @@ class MeshArray(MeshStructure):
     # TODO sasiedztwo wierzcholkow dla kazdego wierzcholka, 2 warstwy
     def vertexes(self):
         result = []
+        for element in
         pass
 
     # elementy zawierajace wierzcholek dla kazdego wierzcholka
@@ -80,7 +81,19 @@ class MeshArray(MeshStructure):
         self.connections[elem1index] = (other[0], other[1], intersection[0])
         self.connections[elem2index] = (other[0], other[1], intersection[1])
 
-    #TODO okreslenie, czy siatka posiada brzeg
+    #czy siatka posiada brzeg
+    def check(self):
+        vertexCounter = []
+        for i in range(len(self.vertexes)):
+            vertexCounter.append(0)
+        for element in self.connections:
+            for vertexIndex in element:
+                vertexCounter[vertexIndex] += 1
+        for v in vertexCounter:
+            if v == 0:
+                return False
+        return True
+
 
 
 class MeshHalfEdge(MeshStructure): # albo winged
