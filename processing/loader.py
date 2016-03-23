@@ -64,7 +64,6 @@ class DataLoader(object):
             return info
 
     def __load_stl(self, path):
-        name = ''
         data = []
         with open(path, 'r') as file:
             for line in file:
@@ -72,13 +71,14 @@ class DataLoader(object):
                 if parsed[0] == 'solid':
                     name = parsed[1]
                 elif parsed[0] == 'endsolid':
-                    return (name, data)
+                    return data
                 elif parsed[0] == 'facet':
                     facet = {'normal': (float(parsed[2]), float(parsed[3]), float(parsed[4])), 'vertexes': []}
                 elif parsed[0] == 'vertex':
                     facet['vertexes'].append((float(parsed[1]), float(parsed[2]), float(parsed[3])))
                 elif parsed[0] == 'endfacet':
                     data.append(facet)
+
 
 
 if __name__ == '__main__':
