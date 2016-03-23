@@ -13,7 +13,7 @@ class DataLoader(object):
         elif extension == 'ply':
             return self.__load_ply(path)
         elif extension == 'stl':
-            return self.__load_stl(path)
+            return self.__load_stl2(path)
 
     def __load_ply(self, path):
         with open(path, 'rb') as f:
@@ -78,6 +78,46 @@ class DataLoader(object):
                     facet['vertexes'].append((float(parsed[1]), float(parsed[2]), float(parsed[3])))
                 elif parsed[0] == 'endfacet':
                     data.append(facet)
+
+    def __load_stl2(self, path):
+        vertexDict = dict()
+        vertexCounter = 0
+        lastVertex = None
+        data = {
+            'edge': [],
+            'vertex': [],
+            'face': []
+        }
+        with open(path, 'r') as file:
+            for line in file:
+                parsed = [x.replace('\n','') for x in line.split(' ') if x != '']
+                if parsed[0] == 'facet':
+                    currentVertexes = []
+                    currentEdges = []
+                elif parsed[0] == 'vertex':
+                    vertex = (float(parsed[1]), float(parsed[2]), float(parsed[3]))
+                    if not vertexDict.has_key(vertex):
+                        vertexDict[vertex] = vertexCounter
+                        vertexCounter += 1
+                    currentVertexes.append(vertex)
+                    if lastVertex is not None:
+                        currentEdges.append((vertexDict[lastVertex], vertexDict[vertex]))
+                    lastVertex = vertex
+                elif parsed[0] == 'endfacet':
+                    currentEdges.append((currentEdges[1][1], currentEdges[0][0]))
+                    for edge in currentEdges:
+                        data['edge'].append(edge)
+                    data['face'].append(tuple([vertexDict[v] for v in currentVertexes]))
+                    currentEdges = []
+                    currentVertexes = []
+                    lastVertex = None
+                elif parsed[0] == 'endsolid':
+                    data['vertex'] = []
+                    for i in range(len(vertexDict)):
+                        data['vertex'].append(None)
+                    for vertex, index in vertexDict.iteritems():
+                        data['vertex'][index] = vertex
+                    return data
 
 
 
