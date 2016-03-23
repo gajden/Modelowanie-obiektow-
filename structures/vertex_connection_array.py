@@ -71,7 +71,12 @@ class MeshArray():
             for elem2 in self.connections:
                 if len(set(elem + elem2)) < len(set(elem)) + len(set(elem2)):
                     result[elem].append(elem2)
-        return result
+        result2 = dict()
+        for elem in self.connections:
+            result2[elem] = []
+            for elems in result[elem]:
+                result2[elem] += result[elems]
+        return result2
 
     #zamiana krawedzi w dwoch przyleglych elementach
     def edgeChange(self, elem1index, elem2index):
