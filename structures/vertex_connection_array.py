@@ -6,18 +6,25 @@ class MeshArray():
         self.vertexes = []
         self.connections = []
 
-    def loadFromPly(self):
-        pass
+    def loadFromPly(self, path):
+        data = DataLoader().load_file(path)
+        self.vertexes = []
+        self.connections = []
+        for vertex in data['vertex']:
+            self.vertexes.append(vertex)
+        for face in data['face']:
+            self.connections.append(tuple(face))
+        print data
 
     def loadFromStl(self, path):
         data = DataLoader().load_file(path)
         self.vertexes = []
-        for facet in data[1]:
+        for facet in data:
             for vertex in facet['vertexes']:
                 self.vertexes.append(vertex)
         self.vertexes = list(set(self.vertexes))
         self.connections = []
-        for facet in data[1]:
+        for facet in data:
             a = self.vertexes.index(facet['vertexes'][0])
             b = self.vertexes.index(facet['vertexes'][1])
             c = self.vertexes.index(facet['vertexes'][2])
@@ -31,19 +38,17 @@ class MeshArray():
         for i in range(len(self.vertexes)):
             result.append([])
         for element in self.connections:
-            result[element[0]].append(element[1])
-            result[element[0]].append(element[2])
-            result[element[1]].append(element[0])
-            result[element[1]].append(element[2])
-            result[element[2]].append(element[0])
-            result[element[2]].append(element[1])
+            for i in range(len(element)):
+                result[element[i]].append(element[(i+1)%len(element)])
+                result[element[i]].append(element[(i+len(element)-1)%len(element)])
         result2 = []
         for i in range(len(self.vertexes)):
             result2.append([])
         for element in self.connections:
-            result2[element[0]] = result[element[0]] + result[element[1]] + result[element[2]]
-            result2[element[1]] = result[element[0]] + result[element[1]] + result[element[2]]
-            result2[element[2]] = result[element[0]] + result[element[1]] + result[element[2]]
+            for i in range(len(element)):
+                result2[element[i]] = []
+                for j in range(len(element)):
+                    result2[element[i]] += result[element[j]]
         for i in range(len(result2)):
             result2[i] = set(result2[i])
         return result2
@@ -64,15 +69,22 @@ class MeshArray():
         for elem in self.connections:
             result[elem] = []
             for elem2 in self.connections:
-                if len(set(elem + elem2)) in [4,5]:
+                if len(set(elem + elem2)) < len(set(elem)) + len(set(elem2)):
                     result[elem].append(elem2)
-        return result
+        result2 = dict()
+        for elem in self.connections:
+            result2[elem] = []
+            for elems in result[elem]:
+                result2[elem] += result[elems]
+        return result2
 
     #zamiana krawedzi w dwoch przyleglych elementach
     def edgeChange(self, elem1index, elem2index):
         if (elem1index < 0 or elem1index >= len(self.connections) or elem2index < 0 or elem2index >= len(self.connections)):
             raise IncorrectElementsException
-        if len(set(self.connections[elem1index] + self.connections[elem2index])) != 4:
+        if len(set(self.connections[elem1index] + self.connections[elem2index])) > len(set(self.connections[elem1index])) + len(set(self.connections[elem2index])):
+            raise IncorrectElementsException
+        if len(self.connections[elem1index]) != 3 or len(self.connections[elem2index]) != 3:
             raise IncorrectElementsException
         set1 = set(self.connections[elem1index])
         set2 = set(self.connections[elem2index])
