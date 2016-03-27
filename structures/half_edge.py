@@ -90,6 +90,24 @@ class HalfEdgeStructure(object):
         vertices.remove(vertex)
         return vertices
 
+    def __find_face_edges(self, face):
+        edges = [face.edge]
+        edge = edges[0]
+        while True:
+            edge = edge.next_edge
+            if edge == edges[0]:
+                break
+            edges.append(edge)
+        return edges
+
+    def __find_joining_edge(self, face1, face2):
+        face1_edges = self.__find_face_edges(face1)
+        face2_edges = self.__find_face_edges(face2)
+        for f1 in face1_edges:
+            for f2 in face2_edges:
+                if f1.pair == f2:
+                    return f1
+
     def get_surrounding_vertices_for_vertex(self, vertex_id):
         vertex = self.vertices[vertex_id]
         first_layer = self.__find_vertices_surrounding_vertex(vertex)
@@ -110,10 +128,17 @@ class HalfEdgeStructure(object):
             faces.append(edge.face)
         return edges, faces
 
-    def get_surrounding_elements_for_element(self, element_id):
-        pass
+    def get_surrounding_elements_for_element(self, face_id):
+        face = self.faces[face_id]
+        face_edges = self.__find_face_edges(face)
+        faces = []
+        for edge in face_edges:
+            faces.append(edge.pair.face)
+        return faces
 
-    def change_edges(self, face1, face2):
+    def change_edges(self, face_id1, face_id2):
+        face1 = self.faces[face_id1]
+        face2 = self.faces[face_id2]
         pass
 
     def grid_has_edge(self):
