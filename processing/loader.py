@@ -18,13 +18,12 @@ class DataLoader(object):
     def __load_ply(self, path):
         with open(path, 'rb') as f:
             info = self.__parse_ply_header(path)
-            data = {}
+            data = {'vertex': [], 'face': [], 'edge': []}
             line = f.readline()
 
             while line[0] != 'end_header':
                 line = f.readline().strip().split(' ')
             for element in info['element'].keys():
-                data[element] = []
                 for i in xrange(info['element'][element]['number']):
                     line = f.readline().strip().split(' ')
                     if element == 'vertex':
