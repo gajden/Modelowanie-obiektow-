@@ -40,7 +40,6 @@ class DataLoader(object):
                         data[element].append(edge)
             return data
 
-
     def __parse_ply_header(self, path):
         with open(path, 'rb') as f:
             last_element = None
@@ -62,23 +61,46 @@ class DataLoader(object):
                 line = f.readline().strip().split(' ')
             return info
 
-    def __load_stl(self, path):
-        data = []
-        with open(path, 'r') as file:
-            for line in file:
-                parsed = [x.replace('\n','') for x in line.split(' ') if x != '']
-                if parsed[0] == 'solid':
-                    name = parsed[1]
-                elif parsed[0] == 'endsolid':
-                    return data
-                elif parsed[0] == 'facet':
-                    facet = {'normal': (float(parsed[2]), float(parsed[3]), float(parsed[4])), 'vertexes': []}
+    @staticmethod
+    def __load_stl(path):
+        vertex_dict = dict()
+        vertex_counter = 0
+        last_vertex = None
+        data = {
+            'edge': [],
+            'vertex': [],
+            'face': []
+        }
+        with open(path, 'r') as f:
+            for line in f:
+                parsed = [x.replace('\n', '') for x in line.split(' ') if x != '']
+                if parsed[0] == 'facet':
+                    current_vertexes = []
+                    current_edges = []
                 elif parsed[0] == 'vertex':
-                    facet['vertexes'].append((float(parsed[1]), float(parsed[2]), float(parsed[3])))
+                    vertex = (float(parsed[1]), float(parsed[2]), float(parsed[3]))
+                    if vertex not in vertex_dict:
+                        vertex_dict[vertex] = vertex_counter
+                        vertex_counter += 1
+                    current_vertexes.append(vertex)
+                    if last_vertex is not None:
+                        current_edges.append((vertex_dict[last_vertex], vertex_dict[vertex]))
+                    last_vertex = vertex
                 elif parsed[0] == 'endfacet':
-                    data.append(facet)
-
-
+                    current_edges.append((current_edges[1][1], current_edges[0][0]))
+                    for edge in current_edges:
+                        data['edge'].append(edge)
+                    data['face'].append(tuple([vertex_dict[v] for v in current_vertexes]))
+                    current_edges = []
+                    current_vertexes = []
+                    last_vertex = None
+                elif parsed[0] == 'endsolid':
+                    data['vertex'] = []
+                    for i in range(len(vertex_dict)):
+                        data['vertex'].append(None)
+                    for vertex, index in vertex_dict.iteritems():
+                        data['vertex'][index] = vertex
+                    return data
 
 if __name__ == '__main__':
     loader = DataLoader()

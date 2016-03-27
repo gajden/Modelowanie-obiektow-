@@ -1,10 +1,8 @@
-from structures.vertex_connection_array import *
+from structures.face_vertex import *
 
 if __name__ == '__main__':
-    mesh = MeshArray()
-    mesh.loadFromPly('files/example.ply')
-    print mesh.edgeChange(0,1)
-    print mesh.elements()
-    print mesh.vertex()
-    print mesh.check()
-    print mesh.vertexFaces()
+    mesh = FaceVertexStructure('files/example.stl')
+    print mesh.face_neighbors()
+    print mesh.vertex_neighbors()
+    print mesh.vertex_faces()
+    print mesh.triangle_edge_replace(0, 1)

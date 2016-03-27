@@ -8,12 +8,11 @@ class FileNotSupportedException(Exception):
     def __str__(self):
         return self.msg
 
-class IncorrectElementsException(Exception):
+
+class IncorrectFacesException(Exception):
     def __init__(self, expr, msg):
         self.expr = expr
         self.msg = msg
 
     def __str__(self):
         return self.msg
-
-
