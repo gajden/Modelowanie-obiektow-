@@ -1,4 +1,5 @@
 from processing.loader import DataLoader
+from structures.data_structure import DataStructure
 
 
 class HalfEdge(object):
@@ -29,7 +30,7 @@ class HEFace(object):
         self.edge = edge
 
 
-class HalfEdgeStructure(object):
+class HalfEdgeStructure(DataStructure):
     def __init__(self, vertex, edge, face):
         self.half_edges = {}
         self.vertices = []
@@ -108,7 +109,7 @@ class HalfEdgeStructure(object):
                 if f1.pair == f2:
                     return f1
 
-    def get_surrounding_vertices_for_vertex(self, vertex_id):
+    def vertex_surrounding(self, vertex_id):
         vertex = self.vertices[vertex_id]
         first_layer = self.__find_vertices_surrounding_vertex(vertex)
         second_layer = set()
@@ -119,7 +120,7 @@ class HalfEdgeStructure(object):
         second_layer.remove(vertex)
         return first_layer, second_layer
 
-    def get_elements_containing_vertex(self, vertex_id):
+    def elements_with_vertex(self, vertex_id):
         vertex = self.vertices[vertex_id]
         edges = self.__find_edges_from_vertex(vertex)
         faces = []
@@ -128,7 +129,7 @@ class HalfEdgeStructure(object):
             faces.append(edge.face)
         return edges, faces
 
-    def get_surrounding_elements_for_element(self, face_id):
+    def face_surrounding(self, face_id):
         face = self.faces[face_id]
         face_edges = self.__find_face_edges(face)
         faces = []
@@ -136,7 +137,7 @@ class HalfEdgeStructure(object):
             faces.append(edge.pair.face)
         return faces
 
-    def change_edges(self, face_id1, face_id2):
+    def switch_triangles(self, face_id1, face_id2):
         face1 = self.faces[face_id1]
         face2 = self.faces[face_id2]
         join_edge = self.__find_joining_edge(face1, face2)
@@ -163,7 +164,7 @@ class HalfEdgeStructure(object):
         new_edge2.prev_edge = face2.edge
         new_edge2.next_edge = face2.edge.prev_edge
 
-    def grid_has_edge(self):
+    def mesh_boundary(self):
         for vertex in self.vertices:
             edges_num = len(self.__find_edges_from_vertex(vertex))
             if edges_num == 1:
@@ -172,21 +173,4 @@ class HalfEdgeStructure(object):
 
 
 if __name__ == '__main__':
-    path = '../files/ex.ply'
-    loader = DataLoader()
-    p = loader.load_file(path)
-    # print p
-    he = HalfEdgeStructure(p['vertex'], p['edge'], p['face'])
-    first, second = he.get_surrounding_vertices_for_vertex(2)
-    edges, faces = he.get_elements_containing_vertex(0)
-
-    print edges
-    print faces
-
-    print 'First'
-    for v in first:
-        print v
-    print ''
-    print 'Second'
-    for v in second:
-        print v
+    pass
