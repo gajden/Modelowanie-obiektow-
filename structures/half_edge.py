@@ -68,9 +68,6 @@ class HalfEdgeStructure(DataStructure):
                 edge = edges[e]
                 self.half_edges[edge].face = face_ob
             self.faces.append(face_ob)
-        print 'HE', self.half_edges
-        print 'face', self.faces
-        print 'ver', self.vertices
 
     def __find_edges_from_vertex(self, vertex):
         edges = [vertex.edge]
@@ -125,7 +122,6 @@ class HalfEdgeStructure(DataStructure):
         edges = self.__find_edges_from_vertex(vertex)
         faces = []
         for edge in edges:
-            print edge.face
             faces.append(edge.face)
         return edges, faces
 
@@ -141,6 +137,8 @@ class HalfEdgeStructure(DataStructure):
         face1 = self.faces[face_id1]
         face2 = self.faces[face_id2]
         join_edge = self.__find_joining_edge(face1, face2)
+
+        # TODO add arguments checking
         pair_edge = join_edge.pair
 
         # change faces
