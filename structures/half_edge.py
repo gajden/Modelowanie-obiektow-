@@ -139,10 +139,36 @@ class HalfEdgeStructure(object):
     def change_edges(self, face_id1, face_id2):
         face1 = self.faces[face_id1]
         face2 = self.faces[face_id2]
-        pass
+        join_edge = self.__find_joining_edge(face1, face2)
+        pair_edge = join_edge.pair
+
+        # change faces
+        join_edge.face.edge = join_edge.next_edge
+        pair_edge.face.edge = pair_edge.next_edge
+
+        # change half edge
+        new_edge1 = HalfEdge()
+        new_edge1.face = face1
+        new_edge1.vertex = face1.edge.next_edge.vertex
+        face1.edge.next_edge.vertex.edge = new_edge1
+        new_edge1.prev_edge = face1.edge
+        new_edge1.next_edge = face1.edge.prev_edge
+
+        new_edge2 = HalfEdge()
+        new_edge1.pair = new_edge2
+        new_edge2.pair = new_edge1
+
+        new_edge2.vertex = face2.edge.next_edge.vertex
+        face2.edge.next_edge.vertex.edge = new_edge2.vertex
+        new_edge2.prev_edge = face2.edge
+        new_edge2.next_edge = face2.edge.prev_edge
 
     def grid_has_edge(self):
-        pass
+        for vertex in self.vertices:
+            edges_num = len(self.__find_edges_from_vertex(vertex))
+            if edges_num == 1:
+                return False
+        return True
 
 
 if __name__ == '__main__':
