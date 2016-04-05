@@ -20,10 +20,10 @@ class FaceVertexStructure(DataStructure):
     def vertex_surrounding(self, vertex_id):
         temp = self.__vertex_neighbors(vertex_id)
         result = set()
-        result.union(temp)
+        result = result.union(temp)
         for v in temp:
-            result.union(self.__vertex_neighbors(v))
-        return result
+            result = result.union(self.__vertex_neighbors(v))
+        return list(result)
 
     def elements_with_vertex(self, vertex_id):
         result = []
@@ -43,10 +43,10 @@ class FaceVertexStructure(DataStructure):
     def face_surrounding(self, face_id):
         result = set()
         temp = self.__face_neighbors(face_id)
-        result.union(temp)
+        result = result.union(temp)
         for f in temp:
-            result.union(self.__face_neighbors(f))
-        return result
+            result = result.union(self.__face_neighbors(f))
+        return list(result)
 
     def switch_triangles(self, face1, face2):
         if face1 == face2 or \

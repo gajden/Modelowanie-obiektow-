@@ -39,7 +39,7 @@ if __name__ == '__main__':
     print 'Execution time of switch_triangles:'
     face_neig = he.face_surrounding(1)[0]
     print 'HE: %fs' % measure_time(he.switch_triangles, 1, face_neig)[0]
-    face_neig = list(fv.face_surrounding(1))[0]
+    face_neig = fv.face_surrounding(1)[0]
     print 'FV: %fs\n' % measure_time(fv.switch_triangles, 1, face_neig)[0]
 
     print 'Execution time of mesh_boundary:'
