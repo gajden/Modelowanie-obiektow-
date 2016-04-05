@@ -135,7 +135,10 @@ class HalfEdgeStructure(DataStructure):
 
     def switch_triangles(self, face_id1, face_id2):
         face1 = self.faces[face_id1]
-        face2 = self.faces[face_id2]
+        if type(face_id2) == int:
+            face2 = self.faces[face_id2]
+        else:
+            face2 = face_id2
         join_edge = self.__find_joining_edge(face1, face2)
 
         # TODO add arguments checking

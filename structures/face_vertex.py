@@ -20,9 +20,9 @@ class FaceVertexStructure(DataStructure):
     def vertex_surrounding(self, vertex_id):
         temp = self.__vertex_neighbors(vertex_id)
         result = set()
-        result += temp
+        result.union(temp)
         for v in temp:
-            result += self.__vertex_neighbors(v)
+            result.union(self.__vertex_neighbors(v))
         return result
 
     def elements_with_vertex(self, vertex_id):
@@ -43,9 +43,9 @@ class FaceVertexStructure(DataStructure):
     def face_surrounding(self, face_id):
         result = set()
         temp = self.__face_neighbors(face_id)
-        result += temp
+        result.union(temp)
         for f in temp:
-            result += self.__face_neighbors(f)
+            result.union(self.__face_neighbors(f))
         return result
 
     def switch_triangles(self, face1, face2):
