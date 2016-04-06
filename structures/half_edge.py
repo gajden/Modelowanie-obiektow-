@@ -166,9 +166,8 @@ class HalfEdgeStructure(DataStructure):
         new_edge2.next_edge = face2.edge.prev_edge
 
     def mesh_boundary(self):
-        for vertex in self.vertices:
-            edges_num = len(self.__find_edges_from_vertex(vertex))
-            if edges_num == 1:
+        for edge in self.half_edges:
+            if self.half_edges[edge].pair is None:
                 return False
         return True
 
